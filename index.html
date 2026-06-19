@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff Application — Value Vault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #07070d;
+      --surface:   #0e0e17;
+      --card:      #12121c;
+      --card2:     #16161f;
+      --border:    #1e1e2d;
+      --border2:   #2a2a3d;
+      --gold:      #d4a843;
+      --gold-lt:   #f0c96a;
+      --gold-glow: rgba(212,168,67,0.18);
+      --gold-dim:  #7a5e20;
+      --silver:    #a0a8b8;
+      --text:      #dde0ee;
+      --muted:     #6b6b8a;
+      --white:     #ffffff;
+      --discord:   #5865F2;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 68px;
+      background: rgba(7,7,13,0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.1rem;
+      color: var(--white); text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-back {
+      display: flex; align-items: center; gap: 0.45rem;
+      color: var(--muted); text-decoration: none;
+      font-size: 0.82rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 140px 5vw 80px;
+      position: relative; overflow: hidden;
+    }
+
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); pointer-events: none;
+    }
+    .orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(212,168,67,0.18) 0%, transparent 70%);
+      top: 5%; left: 50%; transform: translateX(-50%);
+      animation: floatA 9s ease-in-out infinite;
+    }
+    .orb-2 {
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, rgba(88,101,242,0.14) 0%, transparent 70%);
+      top: 45%; left: 10%;
+      animation: floatB 7s ease-in-out infinite;
+    }
+    .orb-3 {
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(212,168,67,0.1) 0%, transparent 70%);
+      top: 35%; right: 8%;
+      animation: floatB 11s ease-in-out infinite reverse;
+    }
+    @keyframes floatA {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-28px); }
+    }
+    @keyframes floatB {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(18px); }
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 72px 72px; opacity: 0.22;
+      mask-image: radial-gradient(ellipse 70% 65% at 50% 40%, black 20%, transparent 100%);
+    }
+
+    .hero-inner { position: relative; max-width: 680px; margin: 0 auto; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: var(--gold-glow);
+      border: 1px solid rgba(212,168,67,0.35);
+      color: var(--gold-lt);
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.4rem 1rem; border-radius: 999px; margin-bottom: 2rem;
+    }
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--gold);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity:1; box-shadow: 0 0 6px var(--gold); }
+      50% { opacity:0.4; box-shadow: none; }
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.6rem, 6.5vw, 5rem);
+      line-height: 1.05; letter-spacing: -0.035em;
+      color: var(--white); margin-bottom: 1.4rem;
+    }
+    h1 .accent {
+      background: linear-gradient(90deg, var(--gold), var(--gold-lt));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      color: var(--muted); max-width: 520px;
+      margin: 0 auto 1rem;
+      font-weight: 400; line-height: 1.75;
+    }
+
+    .spots-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(88,101,242,0.1);
+      border: 1px solid rgba(88,101,242,0.28);
+      border-radius: 999px; padding: 0.4rem 1rem;
+      font-size: 0.78rem; color: #8f9cff; font-weight: 600;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── PERKS STRIP ── */
+    .perks {
+      display: flex; justify-content: center; gap: 0; flex-wrap: wrap;
+      border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden; margin-bottom: 3rem;
+    }
+    .perk {
+      flex: 1; min-width: 140px; padding: 1.4rem 1rem;
+      text-align: center; border-right: 1px solid var(--border);
+      background: rgba(255,255,255,0.015);
+    }
+    .perk:last-child { border-right: none; }
+    .perk-icon { font-size: 1.4rem; margin-bottom: 0.4rem; }
+    .perk-label {
+      font-size: 0.72rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;
+    }
+    .perk-val {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1rem; color: var(--white); display: block;
+      margin-bottom: 0.15rem;
+    }
+
+    /* ── FORM CARD ── */
+    .form-section {
+      padding: 80px 5vw 100px;
+      display: flex; justify-content: center;
+    }
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem 2.5rem;
+      width: 100%; max-width: 560px;
+      position: relative; overflow: hidden;
+    }
+    .form-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .form-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.5rem;
+      color: var(--white); margin-bottom: 0.4rem;
+      letter-spacing: -0.02em;
+    }
+    .form-subtitle {
+      font-size: 0.85rem; color: var(--muted);
+      margin-bottom: 2rem; line-height: 1.6;
+    }
+
+    .field { margin-bottom: 1.35rem; }
+    label {
+      display: block; font-size: 0.78rem; font-weight: 600;
+      color: var(--silver); letter-spacing: 0.04em;
+      text-transform: uppercase; margin-bottom: 0.5rem;
+    }
+    label span { color: var(--gold); margin-left: 2px; }
+
+    input[type="text"], textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.92rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      resize: none;
+    }
+    input[type="text"]::placeholder, textarea::placeholder { color: var(--muted); }
+    input[type="text"]:focus, textarea:focus {
+      border-color: var(--gold-dim);
+      box-shadow: 0 0 0 3px rgba(212,168,67,0.1);
+    }
+    textarea { min-height: 130px; }
+
+    .char-count {
+      text-align: right; font-size: 0.7rem;
+      color: var(--muted); margin-top: 0.3rem;
+    }
+
+    select {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.92rem;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%236b6b8a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+    }
+    select:focus {
+      border-color: var(--gold-dim);
+      box-shadow: 0 0 0 3px rgba(212,168,67,0.1);
+    }
+    select option { background: var(--surface); color: var(--white); }
+
+    .checkbox-group {
+      display: flex; flex-wrap: wrap; gap: 0.6rem;
+    }
+    .checkbox-pill {
+      position: relative;
+    }
+    .checkbox-pill input[type="checkbox"] {
+      position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; margin: 0;
+    }
+    .checkbox-pill label {
+      display: flex; align-items: center; gap: 0.45rem;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 999px;
+      padding: 0.55rem 1.1rem;
+      font-size: 0.82rem; font-weight: 500;
+      text-transform: none; letter-spacing: normal;
+      color: var(--muted); margin-bottom: 0;
+      cursor: pointer; transition: border-color 0.2s, color 0.2s, background 0.2s;
+      user-select: none;
+    }
+    .checkbox-pill input[type="checkbox"]:checked + label {
+      border-color: var(--gold-dim);
+      background: var(--gold-glow);
+      color: var(--gold-lt);
+    }
+    .checkbox-pill input[type="checkbox"]:focus-visible + label {
+      box-shadow: 0 0 0 3px rgba(212,168,67,0.15);
+    }
+
+    .field-hint {
+      font-size: 0.75rem; color: var(--muted);
+      margin-top: 0.4rem; line-height: 1.5;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-lt));
+      color: #07070d; font-weight: 700; font-size: 0.9rem;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 1rem 2rem; border-radius: 8px;
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(212,168,67,0.25);
+      margin-top: 0.5rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-submit:hover:not(:disabled) {
+      opacity: 0.9; transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(212,168,67,0.35);
+    }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .privacy-note {
+      font-size: 0.7rem; color: var(--muted);
+      text-align: center; margin-top: 1rem; line-height: 1.6;
+    }
+
+    /* ── SUCCESS STATE ── */
+    .success-card {
+      display: none;
+      text-align: center; padding: 1rem 0;
+    }
+    .success-icon {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--gold-glow);
+      border: 2px solid rgba(212,168,67,0.35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; margin: 0 auto 1.5rem;
+      animation: popIn 0.5s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .success-title {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.6rem; color: var(--white);
+      letter-spacing: -0.02em; margin-bottom: 0.6rem;
+    }
+    .success-sub {
+      font-size: 0.9rem; color: var(--muted);
+      line-height: 1.7; margin-bottom: 1.5rem;
+    }
+    .applicant-number {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gold-glow), rgba(212,168,67,0.08));
+      border: 1px solid rgba(212,168,67,0.3);
+      border-radius: 12px; padding: 1rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .applicant-number .num {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 3rem; color: var(--gold);
+      display: block; line-height: 1;
+    }
+    .applicant-number .num-label {
+      font-size: 0.72rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin-top: 0.3rem;
+    }
+    .ordinal {
+      font-size: 1.4rem; vertical-align: super; color: var(--gold-lt);
+    }
+
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      color: var(--muted); text-decoration: none;
+      font-size: 0.82rem; font-weight: 500;
+      border: 1px solid var(--border2); border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .back-btn:hover { color: var(--text); border-color: var(--gold-dim); }
+
+    /* ── ERROR ── */
+    .error-msg {
+      display: none;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 8px; padding: 0.75rem 1rem;
+      font-size: 0.82rem; color: #fca5a5;
+      margin-bottom: 1rem;
+    }
+
+    /* ── LOADING SPINNER ── */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(7,7,13,0.3);
+      border-top-color: #07070d;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 5vw;
+      text-align: center;
+    }
+    footer p { font-size: 0.75rem; color: var(--muted); }
+    footer a { color: var(--gold); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .form-card { padding: 1.75rem 1.25rem; }
+      .perks { border-radius: 10px; }
+      .perk { min-width: 100px; padding: 1rem 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">Value <span>Vault</span></a>
+  <a href="/" class="nav-back">
+    Powered by Vercel │Value Vault
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Now Hiring · Staff Team
+    </div>
+    <h1>Help Us Build<br><span class="accent">A Bigger Vault.</span></h1>
+    <p class="hero-sub">
+      We're growing the Value Vault team. We're looking for staff who know how YouTube, Facebook, and Whop clipping actually work — and want to help take this community to a bigger scale.
+    </p>
+    <div class="spots-badge">
+      📈 Real responsibility · Staff role · Grow with us
+    </div>
+
+    <div class="perks">
+      <div class="perk">
+        <div class="perk-icon">🛡️</div>
+        <span class="perk-val">Staff</span>
+        <span class="perk-label">Role Badge</span>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">🤝</div>
+        <span class="perk-val">Direct</span>
+        <span class="perk-label">Team Access</span>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">📊</div>
+        <span class="perk-val">Real</span>
+        <span class="perk-label">Growth Impact</span>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">⚡</div>
+        <span class="perk-val">Free</span>
+        <span class="perk-label">Forever</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FORM -->
+<section class="form-section">
+  <div class="form-card">
+
+    <!-- FORM VIEW -->
+    <div id="formView">
+      <div class="form-title">Staff Application</div>
+      <p class="form-subtitle">Fill in your details below. We review every application personally.</p>
+
+      <div class="error-msg" id="errorMsg">Something went wrong. Please try again.</div>
+
+      <div class="field">
+        <label for="discordName">Discord Name <span>*</span></label>
+        <input type="text" id="discordName" placeholder="e.g. vaultmember#0001" maxlength="60" autocomplete="off"/>
+      </div>
+
+      <div class="field">
+        <label>Which platforms do you know well? <span>*</span></label>
+        <div class="checkbox-group" id="platformGroup">
+          <div class="checkbox-pill">
+            <input type="checkbox" id="platYoutube" value="YouTube"/>
+            <label for="platYoutube">YouTube</label>
+          </div>
+          <div class="checkbox-pill">
+            <input type="checkbox" id="platFacebook" value="Facebook"/>
+            <label for="platFacebook">Facebook</label>
+          </div>
+          <div class="checkbox-pill">
+            <input type="checkbox" id="platWhop" value="Whop Clipping"/>
+            <label for="platWhop">Whop Clipping</label>
+          </div>
+          <div class="checkbox-pill">
+            <input type="checkbox" id="platOther" value="Other"/>
+            <label for="platOther">Other</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="experience">Your experience with clipping & growth <span>*</span></label>
+        <textarea id="experience" placeholder="Tell us about channels, pages, or clipping campaigns you've worked on — what you grew, what worked, any numbers you can share..." maxlength="700"></textarea>
+        <div class="char-count"><span id="expCount">0</span> / 700</div>
+      </div>
+
+      <div class="field">
+        <label for="growthIdea">How would you help grow this community? <span>*</span></label>
+        <textarea id="growthIdea" placeholder="Give us 1-2 concrete ideas for bringing in more members through YouTube, Facebook, or Whop clipping..." maxlength="600"></textarea>
+        <div class="char-count"><span id="growthCount">0</span> / 600</div>
+      </div>
+
+      <div class="field">
+        <label for="availability">Hours per week you can commit <span>*</span></label>
+        <select id="availability">
+          <option value="" disabled selected>Select availability</option>
+          <option value="1-5 hrs/week">1–5 hrs/week</option>
+          <option value="5-10 hrs/week">5–10 hrs/week</option>
+          <option value="10-20 hrs/week">10–20 hrs/week</option>
+          <option value="20+ hrs/week">20+ hrs/week</option>
+        </select>
+      </div>
+
+      <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
+        Send Application →
+      </button>
+      <p class="privacy-note">Your application is sent directly to the Value Vault team. We'll reach out via Discord.</p>
+    </div>
+
+    <!-- SUCCESS VIEW -->
+    <div class="success-card" id="successView">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Application Submitted!</div>
+      <p class="success-sub">Thanks for applying. The Value Vault team will review your application and reach out on Discord soon.</p>
+      <div class="applicant-number">
+        <span class="num" id="applicantNum">—</span>
+        <div class="num-label">Applicant Number</div>
+      </div>
+      <p class="success-sub" id="positionMsg" style="margin-bottom:1.5rem;"></p>
+      <a href="/" class="back-btn">← Back to Value Vault</a>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 <a href="/">Value Vault</a>. All rights reserved.</p>
+</footer>
+
+<script>
+  // ── Char counters ──
+  function wireCounter(fieldId, countId) {
+    const el = document.getElementById(fieldId);
+    const count = document.getElementById(countId);
+    el.addEventListener('input', () => { count.textContent = el.value.length; });
+  }
+  wireCounter('experience', 'expCount');
+  wireCounter('growthIdea', 'growthCount');
+
+  // ── Ordinal suffix ──
+  function ordinal(n) {
+    const s = ['th','st','nd','rd'];
+    const v = n % 100;
+    return s[(v-20)%10] || s[v] || s[0];
+  }
+
+  function getCheckedPlatforms() {
+    return Array.from(document.querySelectorAll('#platformGroup input[type="checkbox"]:checked'))
+      .map(cb => cb.value);
+  }
+
+  // ── Submit handler ──
+  async function handleSubmit() {
+    const discordName = document.getElementById('discordName').value.trim();
+    const platforms = getCheckedPlatforms();
+    const experience = document.getElementById('experience').value.trim();
+    const growthIdea = document.getElementById('growthIdea').value.trim();
+    const availability = document.getElementById('availability').value;
+    const errorMsg = document.getElementById('errorMsg');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Validation
+    errorMsg.style.display = 'none';
+    if (!discordName) { showError('Please enter your Discord name.'); return; }
+    if (platforms.length === 0) { showError('Please select at least one platform you have experience with.'); return; }
+    if (experience.length < 20) { showError('Please tell us a bit more about your clipping/growth experience (at least 20 characters).'); return; }
+    if (growthIdea.length < 15) { showError('Please share at least one idea for how you\'d help grow the community.'); return; }
+    if (!availability) { showError('Please select your weekly availability.'); return; }
+
+    // Loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span> Sending...';
+
+    try {
+      // Send email via formsubmit.co (no backend needed)
+      const formData = new FormData();
+      formData.append('Discord Name', discordName);
+      formData.append('Platforms', platforms.join(', '));
+      formData.append('Clipping & Growth Experience', experience);
+      formData.append('Growth Idea For The Community', growthIdea);
+      formData.append('Weekly Availability', availability);
+      formData.append('_subject', `New Staff Application — ${discordName}`);
+      formData.append('_captcha', 'false');
+      formData.append('_template', 'table');
+
+      const emailRes = await fetch('https://formsubmit.co/padillaskies@gmail.com', {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (!emailRes.ok) throw new Error('Email failed');
+
+      // Increment applicant count via our API
+      const countRes = await fetch('/api/applicant-count', { method: 'POST' });
+      let applicantNumber = 1;
+      if (countRes.ok) {
+        const countData = await countRes.json();
+        applicantNumber = countData.count;
+      }
+
+      // Show success
+      showSuccess(discordName, applicantNumber);
+
+    } catch(err) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Send Application →';
+      showError('Something went wrong. Please try again in a moment.');
+    }
+  }
+
+  function showError(msg) {
+    const errorMsg = document.getElementById('errorMsg');
+    errorMsg.textContent = msg;
+    errorMsg.style.display = 'block';
+  }
+
+  function showSuccess(name, number) {
+    document.getElementById('formView').style.display = 'none';
+    const sv = document.getElementById('successView');
+    sv.style.display = 'block';
+
+    const suf = ordinal(number);
+    document.getElementById('applicantNum').innerHTML = `${number}<span class="ordinal">${suf}</span>`;
+    document.getElementById('positionMsg').textContent =
+      `You are applicant #${number} for the staff team — we'll review and reach out on Discord soon.`;
+  }
+</script>
+
+</body>
+</html>
